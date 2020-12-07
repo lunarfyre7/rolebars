@@ -1,6 +1,6 @@
 # Rolebars
 
-Generic role authorization library for Ruby that does not depend on Rails.
+A really tiny generic role authorization library for Ruby that does not depend on Rails.
 
 ## Installation
 

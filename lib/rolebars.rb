@@ -1,6 +1,9 @@
-require "rolebars/version"
+# frozen_string_literal: true
 
-module Rolebars
-  class Error < StandardError; end
-  # Your code goes here...
-end
+require 'rolebars/errors'
+require 'rolebars/version'
+require 'rolebars/rule'
+require 'rolebars/util'
+require 'rolebars/common'
+require 'rolebars/agent'
+require 'rolebars/resource'

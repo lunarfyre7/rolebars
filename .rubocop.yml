@@ -1,0 +1,28 @@
+Style/AndOr:
+  Enabled: false
+Layout/LineLength:
+  Max: 120
+Style/MethodDefParentheses:
+  Enabled: false
+Style/SymbolArray:
+  Enabled: false
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: false
+Layout/SpaceInsideBlockBraces:
+  Enabled: false
+Layout/HashAlignment:
+  Enabled: false
+Metrics/MethodLength:
+  Max: 30
+Metrics/BlockLength:
+  Max: 50
+Style/TrailingCommaInArguments:
+  Enabled: false
+Style/AsciiComments:
+  Enabled: false
+Style/DoubleNegation:
+  Enabled: false
+Style/StringLiterals:
+  Enabled: false
+Style/ClassAndModuleChildren:
+  Enabled: false

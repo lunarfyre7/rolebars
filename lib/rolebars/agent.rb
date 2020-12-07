@@ -3,39 +3,25 @@
 module Rolebars
   # Main mixin for user objects to add role authorization functionality.
   module Agent
-    using Util::Refinements
-
     def self.included klass
-      klass.include Common
+      # klass.include Common
       klass.extend ClassMethods
 
       klass.rolebars_attr_rules = {}
     end
 
     # Gets the role stored in the property `@rolebars_role_attr`, which is set with
-    # `role_attr` in the class definition
-    def rolebars_role
-      send self.class.rolebars_role_attr.to_sym
+    # `role_attr` in the class definition. If you are storing the roles in a string,
+    # point `@rolebars_role_attr` to the name of a decoding method as this needs
+    # to be an array or single value.
+    def rolebars_roles
+      # @rolebars_roles ||= Array(send(self.class.rolebars_role_attr)).map(&:to_sym).to_set # memo
+      Array(send(self.class.rolebars_role_attr)).map(&:to_sym).to_set
     end
 
-    # def allowed? thing
-    #   thing.agent_allowed? self
-    # end
-
-    # def allowed_read? thing
-    #   allowed? thing or return false
-    #   rules = Util.get_attr_rules agent: self, resource: thing
-    #   return true unless rules&.any?
-    # end
-
-    # def allowed_write? thing
-    #   allowed? thing or return false
-    #   rules = Util.get_attr_rules agent: self, resource: thing
-    #   return true unless rules&.any?
-    # end
-
-    # returns a rule object. 
+    # returns a rule object.
     # usage: `xyz.can.access?`
+    # @return [Rule]
     def can
       Rule.new(explosive: false, agent: self)
     end
@@ -43,6 +29,7 @@ module Rolebars
     # returns an explosive rule object, which will raise an exception
     # on denied permissions.
     # usage: `xyz.can!.access?`
+    # @return [Rule]
     def can!
       Rule.new(explosive: true, agent: self)
     end
@@ -54,7 +41,6 @@ module Rolebars
       def role_attr name
         @rolebars_role_attr = name
       end
-
     end
   end
 end

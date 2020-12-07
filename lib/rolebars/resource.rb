@@ -3,10 +3,8 @@
 module Rolebars
   # Main mixin for objects to add role authorization functionality.
   module Resource
-    using Util::Refinements
-
     def self.included base
-      base.include Common
+      # base.include Common
       base.extend ClassMethods
 
       base.rolebars_readable = Set.new
@@ -17,19 +15,18 @@ module Rolebars
       self.class.rolebars_readable
     end
 
-    def rolebars_readable= value
-      self.class.rolebars_readable = value
-    end
+    # def rolebars_readable= value
+    #   self.class.rolebars_readable = value
+    # end
 
     def rolebars_writable
       self.class.rolebars_writable
     end
 
-    def rolebars_writable= value
-      self.class.rolebars_writable = value
-    end
+    # def rolebars_writable= value
+    #   self.class.rolebars_writable = value
+    # end
 
-    # Class level methods to mix in
     module ClassMethods
       attr_accessor :rolebars_readable
       attr_accessor :rolebars_writable

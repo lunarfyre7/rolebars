@@ -15,7 +15,7 @@ class RolebarsTest < Minitest::Test
   end
   class self::ResourceWList < BaseResource
     include Rolebars::Resource
-    role_whitelist :allowed, :cat
+    role_whitelist :allowed, :cat, :admin
   end
   class self::User
     attr_accessor :role
@@ -40,9 +40,9 @@ class RolebarsTest < Minitest::Test
     refute user_b.can.read? resource
     refute user_b.can.write? resource
 
-    assert_raises Rolebars::AuthorizationError do
-      user_b.can!.access? resource
-    end
+    assert_raises(Rolebars::AuthorizationError) { user_b.can!.access? resource }
+    assert_raises(Rolebars::AuthorizationError) { user_b.can!.read? resource }
+    assert_raises(Rolebars::AuthorizationError) { user_b.can!.write? resource }
   end
 
   def test_whitelist_shorthand
@@ -54,5 +54,17 @@ class RolebarsTest < Minitest::Test
     assert user.can.access? resource
     user.role = :bat
     refute user.can.access? resource
+  end
+
+  def test_multiple_roles
+    user = User.new
+    user.role = [:admin, :baka]
+    resource = ResourceWList.new
+
+    assert user.can.access? resource
+
+    user.role = [:baka, :neko]
+    refute user.can.access? resource
+    assert_raises(Rolebars::AuthorizationError) { user.can!.access? resource }
   end
 end

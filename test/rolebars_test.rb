@@ -67,4 +67,11 @@ class RolebarsTest < Minitest::Test
     refute user.can.access? resource
     assert_raises(Rolebars::AuthorizationError) { user.can!.access? resource }
   end
+
+  def test_auth_against_class
+    user = User.new
+    user.role = :role_a
+    assert user.can.access? ResourceA
+    refute user.can.access? ResourceB
+  end
 end

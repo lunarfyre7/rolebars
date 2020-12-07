@@ -5,48 +5,50 @@ module Rolebars
   module Resource
     using Util::Refinements
 
-    def self.included klass
-      klass.include Common
-      klass.extend ClassMethods
+    def self.included base
+      base.include Common
+      base.extend ClassMethods
 
-      klass.rolebars_attr_rules = {}
-      klass.rolebars_role_rules = []
-      klass.rolebars_role_blacklist = Set.new
-      klass.rolebars_role_whitelist = Set.new
+      # base.rolebars_attr_rules = {}
+      # base.rolebars_role_rules = []
+      # base.rolebars_role_blacklist = Set.new
+      # base.rolebars_role_whitelist = Set.new
+      base.rolebars_readable = Set.new
+      base.rolebars_writable = Set.new
     end
 
-    def agent_allowed? agent
-      case self.class.rolebars_list_mode
-      when :blacklist
-        !self.class.rolebars_role_blacklist.member? agent.rolebars_role.to_sym
-      when :whitelist
-        self.class.rolebars_role_whitelist.member? agent.rolebars_role.to_sym
-      else
-        warn 'Neither a whitelist or blacklist are supplied'
-        true
-      end
+    def rolebars_readable
+      self.class.rolebars_readable
+    end
+
+    def rolebars_readable=v
+      self.class.rolebars_readable=v
+    end
+
+    def rolebars_writable
+      self.class.rolebars_writable
+    end
+
+    def rolebars_writable=v
+      self.class.rolebars_writable=v
     end
 
     module ClassMethods
-      attr_accessor :rolebars_role_attr
-      attr_accessor :rolebars_list_mode
-      attr_accessor :rolebars_role_rules
-      attr_accessor :rolebars_attr_rules
-      attr_accessor :rolebars_role_blacklist
-      attr_accessor :rolebars_role_whitelist
+      attr_accessor :rolebars_readable
+      attr_accessor :rolebars_writable
 
-      def role_attr name
-        rolebars_role_attr = name
+      def role_permissions **rules
+        rules.each do |key, value|
+          @rolebars_readable << key if value == true || value.to_s.match?(/r/)
+          @rolebars_writable << key if value == true || value.to_s.match?(/w/)
+        end
       end
 
       def role_whitelist *roles
-        @rolebars_list_mode = :whitelist
-        @rolebars_role_whitelist = @rolebars_role_whitelist&.union roles
-      end
-
-      def role_blacklist *roles
-        @rolebars_list_mode = :blacklist
-        @rolebars_role_blacklist = @rolebars_role_blacklist&.union roles
+        roles.each do |r|
+          @rolebars_readable << r
+          @rolebars_writable << r
+        end
       end
     end
   end

@@ -7,15 +7,15 @@ class RolebarsTest < Minitest::Test
   end
   class self::ResourceA < BaseResource
     include Rolebars::Resource
-    role_whitelist :allowed, :yes
+    role_permissions role_a: :rw, role_b: false
   end
   class self::ResourceB < BaseResource
     include Rolebars::Resource
-    role_blacklist :disallowed, :no
+    role_permissions role_b: true, role_a: false
   end
-  class self::ResourceC < BaseResource
+  class self::ResourceWList < BaseResource
     include Rolebars::Resource
-    # role_rules 
+    role_whitelist :allowed, :cat
   end
   class self::User
     attr_accessor :role
@@ -24,44 +24,35 @@ class RolebarsTest < Minitest::Test
     role_attr :role
   end
 
-  def test_role_whitelist
+  def test_role_groups
     user = User.new
-    object = ResourceA.new
-    user.role = :allowed
-    assert user.allowed? object
-    assert user.allowed_read? object
-    assert user.allowed_write? object
+    resource = ResourceA.new
+    user.role = :role_a
+    user_b = User.new
+    user_b.role = :role_b
+    assert user.can.access? resource
+    assert user.can.read? resource
+    assert user.can.write? resource
+    assert user.can!.access? resource
+    assert user.can!.read? resource
+    assert user.can!.write? resource
+    refute user_b.can.access? resource
+    refute user_b.can.read? resource
+    refute user_b.can.write? resource
 
-    user.role = :yes
-    assert user.allowed? object
-    assert user.allowed_read? object
-    assert user.allowed_write? object
-
-    user.role = :meow
-
-    refute user.allowed? object
-    refute user.allowed_read? object
-    refute user.allowed_write? object
+    assert_raises Rolebars::AuthorizationError do
+      user_b.can!.access? resource
+    end
   end
 
-  def test_role_blacklist
+  def test_whitelist_shorthand
     user = User.new
     user.role = :allowed
-    object = ResourceB.new
-    assert user.allowed? object
-    assert user.allowed_read? object
-    assert user.allowed_write? object
-
-    user.role = :disallowed
-
-    refute user.allowed? object
-    refute user.allowed_read? object
-    refute user.allowed_write? object
-
-    user.role = :no
-
-    refute user.allowed? object
-    refute user.allowed_read? object
-    refute user.allowed_write? object
+    resource = ResourceWList.new
+    assert user.can.access? resource
+    user.role = :cat
+    assert user.can.access? resource
+    user.role = :bat
+    refute user.can.access? resource
   end
 end

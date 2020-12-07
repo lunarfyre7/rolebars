@@ -18,20 +18,33 @@ module Rolebars
       send self.class.rolebars_role_attr.to_sym
     end
 
-    def allowed? thing
-      thing.agent_allowed? self
+    # def allowed? thing
+    #   thing.agent_allowed? self
+    # end
+
+    # def allowed_read? thing
+    #   allowed? thing or return false
+    #   rules = Util.get_attr_rules agent: self, resource: thing
+    #   return true unless rules&.any?
+    # end
+
+    # def allowed_write? thing
+    #   allowed? thing or return false
+    #   rules = Util.get_attr_rules agent: self, resource: thing
+    #   return true unless rules&.any?
+    # end
+
+    # returns a rule object. 
+    # usage: `xyz.can.access?`
+    def can
+      Rule.new(explosive: false, agent: self)
     end
 
-    def allowed_read? thing
-      allowed? thing or return false
-      rules = Util.get_attr_rules agent: self, resource: thing
-      return true unless rules&.any?
-    end
-
-    def allowed_write? thing
-      allowed? thing or return false
-      rules = Util.get_attr_rules agent: self, resource: thing
-      return true unless rules&.any?
+    # returns an explosive rule object, which will raise an exception
+    # on denied permissions.
+    # usage: `xyz.can!.access?`
+    def can!
+      Rule.new(explosive: true, agent: self)
     end
 
     module ClassMethods

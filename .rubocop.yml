@@ -1,3 +1,5 @@
+# I do what I want
+
 Style/AndOr:
   Enabled: false
 Layout/LineLength:
@@ -25,4 +27,6 @@ Style/DoubleNegation:
 Style/StringLiterals:
   Enabled: false
 Style/ClassAndModuleChildren:
+  Enabled: false
+Style/ParallelAssignment:
   Enabled: false
